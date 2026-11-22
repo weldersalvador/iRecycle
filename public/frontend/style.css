@@ -355,3 +355,7 @@ body {
 .modal-content { max-height: 90vh; overflow-y: auto; }
 .badge-pendente { background: #fff3cd; color: #664d03; }
 .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.card-foto { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+.admin-tabs { flex-wrap: wrap; }
+.tabela-dados td .btn-primary, .tabela-dados td .btn-cancel { padding: 5px 10px; font-size: 0.8rem; margin-right: 4px; }

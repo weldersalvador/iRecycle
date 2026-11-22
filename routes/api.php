@@ -25,11 +25,13 @@ Route::middleware('auth.token')->group(function () {
         Route::get('resumo', [VendedorController::class, 'resumo']);
         Route::post('anuncios', [VendedorController::class, 'store']);
         Route::post('anuncios/{anuncio}/cancelar', [VendedorController::class, 'cancelar']);
+        Route::get('anuncios/{anuncio}/lances', [VendedorController::class, 'lances']);
     });
 
     Route::middleware('perfil:empresa')->prefix('empresa')->group(function () {
         Route::get('leiloes', [EmpresaController::class, 'leiloes']);
         Route::post('leiloes/{anuncio}/lances', [EmpresaController::class, 'lance']);
+        Route::get('lances', [EmpresaController::class, 'meusLances']);
         Route::get('compras', [EmpresaController::class, 'compras']);
         Route::post('compras/{transacao}/pagar', [EmpresaController::class, 'pagar']);
     });
@@ -42,5 +44,23 @@ Route::middleware('auth.token')->group(function () {
         Route::get('empresas', [AdminController::class, 'empresas']);
         Route::post('empresas/{empresa}/aprovar', [AdminController::class, 'aprovar']);
         Route::post('empresas/{empresa}/recusar', [AdminController::class, 'recusar']);
+
+        Route::get('categorias', [AdminController::class, 'categorias']);
+        Route::post('categorias', [AdminController::class, 'salvarCategoria']);
+        Route::put('categorias/{categoria}', [AdminController::class, 'atualizarCategoria']);
+
+        Route::get('pontos', [AdminController::class, 'pontos']);
+        Route::post('pontos', [AdminController::class, 'salvarPonto']);
+        Route::put('pontos/{ponto}', [AdminController::class, 'atualizarPonto']);
+
+        Route::get('operadores', [AdminController::class, 'operadores']);
+        Route::post('operadores', [AdminController::class, 'salvarOperador']);
+        Route::put('operadores/{operador}', [AdminController::class, 'atualizarOperador']);
+
+        Route::get('anuncios', [AdminController::class, 'anuncios']);
+        Route::post('anuncios/{anuncio}/remover', [AdminController::class, 'removerAnuncio']);
+        Route::get('usuarios', [AdminController::class, 'usuarios']);
+        Route::post('usuarios/{usuario}/bloquear', [AdminController::class, 'bloquear']);
+        Route::post('usuarios/{usuario}/desbloquear', [AdminController::class, 'desbloquear']);
     });
 });

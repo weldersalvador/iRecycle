@@ -105,6 +105,12 @@
                 <p>Dê lances nos materiais disponíveis. O maior lance ao fim do prazo vence.</p>
                 <div class="grid-cards" id="grid-leiloes"></div>
 
+                <h3 style="margin-top: 30px;">Meus lances</h3>
+                <table class="tabela-dados">
+                    <thead><tr><th>Material</th><th>Meu lance</th><th>Data</th><th>Situação</th></tr></thead>
+                    <tbody id="tabela-empresa-lances"></tbody>
+                </table>
+
                 <h3 style="margin-top: 30px;">Minhas compras</h3>
                 <table class="tabela-dados">
                     <thead><tr><th>Material</th><th>Valor</th><th>Entrega</th><th>Pagamento</th><th>Ação</th></tr></thead>
@@ -150,8 +156,12 @@
                 <h1>Painel do Administrador</h1>
                 
                 <div class="admin-tabs">
-                    <button class="tab-btn active" onclick="mudarAbaAdmin('empresas', this)">Aprovar Empresas</button>
+                    <button class="tab-btn active" onclick="mudarAbaAdmin('empresas', this)">Empresas</button>
                     <button class="tab-btn" onclick="mudarAbaAdmin('categorias', this)">Categorias</button>
+                    <button class="tab-btn" onclick="mudarAbaAdmin('pontos', this)">Pontos de descarte</button>
+                    <button class="tab-btn" onclick="mudarAbaAdmin('operadores', this)">Operadores</button>
+                    <button class="tab-btn" onclick="mudarAbaAdmin('anuncios', this)">Anúncios</button>
+                    <button class="tab-btn" onclick="mudarAbaAdmin('usuarios', this)">Usuários</button>
                 </div>
 
                 <div id="admin-aba-empresas" class="admin-conteudo">
@@ -160,9 +170,47 @@
                         <tbody id="admin-tabela-empresas"></tbody>
                     </table>
                 </div>
-                
+
                 <div id="admin-aba-categorias" class="admin-conteudo" style="display:none;">
-                    <p>Gestão de categorias (Plástico, Metal, Papel, Vidro, Eletrônicos).</p>
+                    <form id="form-categoria" style="display:flex; gap:10px; margin-bottom:15px;">
+                        <input type="text" id="categoria-nome" required maxlength="60" placeholder="Nova categoria (ex: Madeira)"
+                               style="flex:1; padding:10px; border:1px solid #ccc; border-radius:5px; font-size:1rem;">
+                        <button type="submit" class="btn-primary">Adicionar</button>
+                    </form>
+                    <table class="tabela-dados">
+                        <thead><tr><th>Categoria</th><th>Status</th><th>Ação</th></tr></thead>
+                        <tbody id="admin-tabela-categorias"></tbody>
+                    </table>
+                </div>
+
+                <div id="admin-aba-pontos" class="admin-conteudo" style="display:none;">
+                    <button class="btn-primary" style="margin-bottom:15px;" onclick="abrirModalPonto()"><i class="fa-solid fa-plus"></i> Novo ponto</button>
+                    <table class="tabela-dados">
+                        <thead><tr><th>Nome</th><th>Endereço</th><th>Horário</th><th>Aceita</th><th>Status</th><th>Ações</th></tr></thead>
+                        <tbody id="admin-tabela-pontos"></tbody>
+                    </table>
+                </div>
+
+                <div id="admin-aba-operadores" class="admin-conteudo" style="display:none;">
+                    <button class="btn-primary" style="margin-bottom:15px;" onclick="abrirModalOperador()"><i class="fa-solid fa-plus"></i> Novo operador</button>
+                    <table class="tabela-dados">
+                        <thead><tr><th>Nome</th><th>E-mail</th><th>Ponto</th><th>Status</th><th>Ação</th></tr></thead>
+                        <tbody id="admin-tabela-operadores"></tbody>
+                    </table>
+                </div>
+
+                <div id="admin-aba-anuncios" class="admin-conteudo" style="display:none;">
+                    <table class="tabela-dados">
+                        <thead><tr><th>Material</th><th>Vendedor</th><th>Maior lance</th><th>Encerra em</th><th>Status</th><th>Ação</th></tr></thead>
+                        <tbody id="admin-tabela-anuncios"></tbody>
+                    </table>
+                </div>
+
+                <div id="admin-aba-usuarios" class="admin-conteudo" style="display:none;">
+                    <table class="tabela-dados">
+                        <thead><tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Status</th><th>Ação</th></tr></thead>
+                        <tbody id="admin-tabela-usuarios"></tbody>
+                    </table>
                 </div>
             </section>
 
@@ -256,6 +304,56 @@
                     <button type="submit" class="btn-primary">Cadastrar</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-ponto">
+        <div class="modal-content">
+            <h2 id="ponto-titulo">Novo ponto de descarte</h2>
+            <form id="form-ponto">
+                <input type="hidden" id="ponto-id">
+                <div class="input-group"><label>Nome</label><input type="text" id="ponto-nome" required maxlength="120"></div>
+                <div class="input-group"><label>Endereço</label><input type="text" id="ponto-endereco" required maxlength="200"></div>
+                <div class="input-group"><label>Horário de funcionamento</label><input type="text" id="ponto-horario" required maxlength="100" placeholder="Ex: 08h - 18h"></div>
+                <div class="input-group"><label>Materiais aceitos</label><input type="text" id="ponto-materiais" required maxlength="200" placeholder="Ex: Plástico, Metal, Papel"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="fecharModal('modal-ponto')">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-operador">
+        <div class="modal-content">
+            <h2>Novo operador</h2>
+            <form id="form-operador">
+                <div class="input-group"><label>Nome</label><input type="text" id="op-nome" required maxlength="120"></div>
+                <div class="input-group"><label>E-mail</label><input type="email" id="op-email" required></div>
+                <div class="grid-2">
+                    <div class="input-group"><label>Senha (mín. 6)</label><input type="password" id="op-senha" minlength="6" required></div>
+                    <div class="input-group"><label>Telefone</label><input type="text" id="op-telefone" maxlength="20"></div>
+                </div>
+                <div class="input-group"><label>Ponto de descarte</label><select id="op-ponto" required></select></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="fecharModal('modal-operador')">Cancelar</button>
+                    <button type="submit" class="btn-primary">Cadastrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-lances">
+        <div class="modal-content">
+            <h2>Lances recebidos</h2>
+            <p id="lances-material" style="margin-bottom: 15px; font-weight: bold; color: #0d5c43;"></p>
+            <table class="tabela-dados">
+                <thead><tr><th>Valor</th><th>Data</th></tr></thead>
+                <tbody id="tabela-lances-anuncio"></tbody>
+            </table>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="fecharModal('modal-lances')">Fechar</button>
+            </div>
         </div>
     </div>
 

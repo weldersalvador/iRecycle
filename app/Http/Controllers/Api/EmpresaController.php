@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Anuncio;
+use App\Models\Lance;
 use App\Models\Transacao;
 use App\Services\LeilaoService;
 use Illuminate\Http\JsonResponse;
@@ -34,6 +35,34 @@ class EmpresaController extends Controller
         $lance = $this->leilao->darLance($request->user(), $anuncio, (float) $dados['valor']);
 
         return response()->json(['message' => 'Lance registrado com sucesso!', 'lance' => $lance], 201);
+    }
+
+    /** RF6 (histórico de lances) */
+    public function meusLances(Request $request): JsonResponse
+    {
+        $this->leilao->encerrarVencidos();
+        $eu = $request->user()->id;
+
+        $lances = Lance::with('anuncio.transacao')->where('user_id', $eu)->latest()->limit(100)->get();
+
+        return response()->json($lances->map(function ($l) use ($eu) {
+            $a = $l->anuncio;
+            $situacao = match (true) {
+                $a->status === 'aberto' && $a->maior_lance === $l->valor => 'Liderando',
+                $a->status === 'aberto' => 'Superado',
+                $a->status === 'vendido' && $a->transacao?->empresa_id === $eu && $a->transacao->valor_final === $l->valor => 'Venceu',
+                $a->status === 'vendido' => 'Não venceu',
+                default => 'Encerrado',
+            };
+
+            return [
+                'id' => $l->id,
+                'material' => $a->material,
+                'valor' => $l->valor,
+                'data' => $l->created_at,
+                'situacao' => $situacao,
+            ];
+        }));
     }
 
     /** RF6 (histórico de compras e status dos pagamentos) */

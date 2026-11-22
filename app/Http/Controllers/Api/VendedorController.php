@@ -76,6 +76,16 @@ class VendedorController extends Controller
         return response()->json($anuncio, 201);
     }
 
+    /** RF6 (lances recebidos; a empresa não é identificada antes do fechamento, RNF15) */
+    public function lances(Request $request, Anuncio $anuncio): JsonResponse
+    {
+        abort_if($anuncio->user_id !== $request->user()->id, 403, 'Este anúncio não é seu.');
+
+        return response()->json(
+            $anuncio->lances()->orderByDesc('valor')->get(['id', 'valor', 'created_at'])
+        );
+    }
+
     /** RF5 */
     public function cancelar(Request $request, Anuncio $anuncio): JsonResponse
     {
