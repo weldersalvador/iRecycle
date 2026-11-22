@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iRecycle</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- TELA DE LOGIN -->
+    <div id="tela-login" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f8f9fa;">
+        <div class="login-card">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <i class="fa-solid fa-recycle" style="color: #0d5c43; font-size: 3rem;"></i>
+                <h2 style="color: #0d5c43; margin-top: 10px;">iRecycle</h2>
+            </div>
+            <h3 style="text-align: center; margin-bottom: 20px;">Acesse sua conta</h3>
+            <form id="form-login">
+                <div class="input-group">
+                    <label>E-mail</label>
+                    <input type="email" id="login-email" value="teste@email.com" required>
+                </div>
+                <div class="input-group">
+                    <label>Senha</label>
+                    <input type="password" id="login-senha" value="123456" required>
+                </div>
+                <div class="input-group">
+                    <label>Escolha o Perfil (Simulação):</label>
+                    <select id="login-perfil">
+                        <option value="vendedor">Vendedor</option>
+                        <option value="empresa">Empresa Compradora</option>
+                        <option value="operador">Operador de Ponto</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">Entrar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- APLICAÇÃO PRINCIPAL (Escondida até fazer login) -->
+    <div id="app-principal" style="display: none;">
+        
+        <header class="navbar">
+            <div class="logo"><i class="fa-solid fa-recycle"></i> iRecycle</div>
+            <nav class="menu" id="menu-navegacao"></nav>
+            <div class="user-profile">
+                <span id="perfil-logado-texto" style="font-size: 0.9rem; margin-right: 10px;">Perfil</span>
+                <div class="avatar" id="avatar-letra">U</div>
+                <button class="btn-sair" onclick="logout()" title="Sair"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </header>
+
+        <main class="container">
+            
+            <!-- TELA: VENDEDOR -->
+            <section id="tela-vendedor-visao" class="conteudo-tela" style="display: none;">
+                <div class="breadcrumb">Plataforma de reciclagem / Visão geral</div>
+                <div class="hero-section">
+                    <span class="subtitle">BEM-VINDO AO IRECYCLE</span>
+                    <h1>Reciclar vale mais.</h1>
+                    <p>Acompanhe seus materiais, negociações e impacto em um só lugar.</p>
+                    <button class="btn-primary" onclick="abrirModal('modal-anuncio')">
+                        <i class="fa-solid fa-plus"></i> Anunciar material
+                    </button>
+                </div>
+
+                <div class="cta-card">
+                    <h3><i class="fa-solid fa-recycle"></i> Dê um novo destino aos seus resíduos</h3>
+                    <p>Publique um material e permita que empresas licenciadas façam suas ofertas.</p>
+                    <a onclick="navegarPara('tela-pontos')" style="cursor: pointer; color: #0d5c43; font-weight: bold; text-decoration: none;">Encontrar ponto de descarte &rarr;</a>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header"><span>Anúncios ativos</span><i class="fa-regular fa-file-lines"></i></div>
+                        <h2 id="stat-anuncios">00</h2>
+                        <p>Materiais disponíveis para negociação</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header"><span>Lances recebidos</span><i class="fa-solid fa-arrow-trend-up"></i></div>
+                        <h2 id="stat-lances">00</h2>
+                        <p>Em todos os seus anúncios</p>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px;">Meus Anúncios</h3>
+                <table class="tabela-dados">
+                    <thead>
+                        <tr><th>Material</th><th>Data</th><th>Status</th><th>Ações</th></tr>
+                    </thead>
+                    <tbody id="tabela-vendedor-corpo"></tbody>
+                </table>
+            </section>
+
+            <!-- TELA: EMPRESA -->
+            <section id="tela-empresa-leiloes" class="conteudo-tela" style="display: none;">
+                <div class="breadcrumb">Plataforma de reciclagem / Leilões</div>
+                <h1>Leilões Abertos</h1>
+                <p>Dê lances nos materiais disponíveis. O maior lance ao fim do prazo vence.</p>
+                <div class="grid-cards" id="grid-leiloes"></div>
+            </section>
+
+            <!-- TELA: PONTOS -->
+            <section id="tela-pontos" class="conteudo-tela" style="display: none;">
+                <div class="breadcrumb">Plataforma de reciclagem / Pontos de Descarte</div>
+                <h1>Pontos de Descarte Credenciados</h1>
+                <p>Encontre o local mais próximo para entregar seus materiais recicláveis.</p>
+                <div class="grid-cards" id="lista-pontos"></div>
+            </section>
+
+            <!-- TELA: OPERADOR -->
+            <section id="tela-operador" class="conteudo-tela" style="display: none;">
+                <div class="breadcrumb">Plataforma de reciclagem / Operação</div>
+                <h1>Confirmar Entrega</h1>
+                <p>Insira o código de descarte gerado pelo fechamento do leilão.</p>
+                <div style="max-width: 500px; background: white; padding: 30px; border-radius: 12px; margin-top: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                    <div class="input-group">
+                        <label>Código de Descarte (Ex: REC-1234)</label>
+                        <input type="text" id="codigo-descarte" placeholder="REC-XXXX">
+                    </div>
+                    <button class="btn-primary" onclick="confirmarEntrega()">Validar e Concluir</button>
+                </div>
+            </section>
+
+            <!-- TELA: ADMIN -->
+            <section id="tela-admin" class="conteudo-tela" style="display: none;">
+                <div class="breadcrumb">Plataforma de reciclagem / Administração</div>
+                <h1>Painel do Administrador</h1>
+                
+                <div class="admin-tabs">
+                    <button class="tab-btn active" onclick="mudarAbaAdmin('empresas', this)">Aprovar Empresas</button>
+                    <button class="tab-btn" onclick="mudarAbaAdmin('categorias', this)">Categorias</button>
+                </div>
+
+                <div id="admin-aba-empresas" class="admin-conteudo">
+                    <table class="tabela-dados">
+                        <thead><tr><th>Empresa</th><th>CNPJ</th><th>Status</th><th>Ação</th></tr></thead>
+                        <tbody id="admin-tabela-empresas"></tbody>
+                    </table>
+                </div>
+                
+                <div id="admin-aba-categorias" class="admin-conteudo" style="display:none;">
+                    <p>Gestão de categorias (Plástico, Metal, Papel, Vidro, Eletrônicos).</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- MODAIS -->
+    <div class="modal-overlay" id="modal-anuncio">
+        <div class="modal-content">
+            <h2>Novo Anúncio de Material</h2>
+            <form id="form-anuncio">
+                <div class="input-group">
+                    <label>Nome do Material</label>
+                    <input type="text" id="material-nome" required placeholder="Ex: Garrafas PET">
+                </div>
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label>Quantidade (kg)</label>
+                        <input type="number" id="material-peso" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Lance Mínimo (R$)</label>
+                        <input type="number" id="material-lance" required>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="fecharModal('modal-anuncio')">Cancelar</button>
+                    <button type="submit" class="btn-primary">Publicar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-lance">
+        <div class="modal-content">
+            <h2>Dar Lance no Leilão</h2>
+            <p id="lance-material-nome" style="margin-bottom: 15px; font-weight: bold; color: #0d5c43;"></p>
+            <form id="form-lance">
+                <div class="input-group">
+                    <label>Seu Lance (R$)</label>
+                    <input type="number" id="lance-valor" required placeholder="Deve superar o último lance">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="fecharModal('modal-lance')">Cancelar</button>
+                    <button type="submit" class="btn-primary">Enviar Lance</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Importa o JS no final do body para garantir que o HTML carregue primeiro -->
+    <script src="api.js"></script>
+</body>
+</html>
