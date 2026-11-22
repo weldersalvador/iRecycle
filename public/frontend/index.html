@@ -20,23 +20,18 @@
             <form id="form-login">
                 <div class="input-group">
                     <label>E-mail</label>
-                    <input type="email" id="login-email" value="teste@email.com" required>
+                    <input type="email" id="login-email" required>
                 </div>
                 <div class="input-group">
                     <label>Senha</label>
-                    <input type="password" id="login-senha" value="123456" required>
+                    <input type="password" id="login-senha" required>
                 </div>
-                <div class="input-group">
-                    <label>Escolha o Perfil (Simulação):</label>
-                    <select id="login-perfil">
-                        <option value="vendedor">Vendedor</option>
-                        <option value="empresa">Empresa Compradora</option>
-                        <option value="operador">Operador de Ponto</option>
-                        <option value="admin">Administrador</option>
-                    </select>
-                </div>
+                <p id="login-erro" style="color:#842029; font-size:0.9rem; margin-bottom:10px; display:none;"></p>
                 <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">Entrar</button>
             </form>
+            <p style="text-align:center; margin-top:15px; font-size:0.9rem;">
+                Não tem conta? <a onclick="abrirModal('modal-cadastro')" style="cursor:pointer; color:#0d5c43; font-weight:bold;">Cadastre-se</a>
+            </p>
         </div>
     </div>
 
@@ -93,6 +88,14 @@
                     </thead>
                     <tbody id="tabela-vendedor-corpo"></tbody>
                 </table>
+
+                <h3 style="margin-top: 30px;">Negociações fechadas (código de descarte)</h3>
+                <table class="tabela-dados">
+                    <thead>
+                        <tr><th>Material</th><th>Comprador</th><th>Valor</th><th>Código</th><th>Entrega</th><th>Pagamento</th></tr>
+                    </thead>
+                    <tbody id="tabela-vendedor-transacoes"></tbody>
+                </table>
             </section>
 
             <!-- TELA: EMPRESA -->
@@ -101,6 +104,22 @@
                 <h1>Leilões Abertos</h1>
                 <p>Dê lances nos materiais disponíveis. O maior lance ao fim do prazo vence.</p>
                 <div class="grid-cards" id="grid-leiloes"></div>
+
+                <h3 style="margin-top: 30px;">Minhas compras</h3>
+                <table class="tabela-dados">
+                    <thead><tr><th>Material</th><th>Valor</th><th>Entrega</th><th>Pagamento</th><th>Ação</th></tr></thead>
+                    <tbody id="tabela-empresa-compras"></tbody>
+                </table>
+            </section>
+
+            <!-- TELA: NOTIFICAÇÕES -->
+            <section id="tela-notificacoes" class="conteudo-tela" style="display: none;">
+                <div class="breadcrumb">Plataforma de reciclagem / Notificações</div>
+                <h1>Notificações</h1>
+                <table class="tabela-dados">
+                    <thead><tr><th>Data</th><th>Mensagem</th></tr></thead>
+                    <tbody id="tabela-notificacoes"></tbody>
+                </table>
             </section>
 
             <!-- TELA: PONTOS -->
@@ -157,17 +176,33 @@
             <form id="form-anuncio">
                 <div class="input-group">
                     <label>Nome do Material</label>
-                    <input type="text" id="material-nome" required placeholder="Ex: Garrafas PET">
+                    <input type="text" id="material-nome" required maxlength="120" placeholder="Ex: Garrafas PET">
+                </div>
+                <div class="input-group">
+                    <label>Categoria</label>
+                    <select id="material-categoria" required></select>
+                </div>
+                <div class="input-group">
+                    <label>Descrição</label>
+                    <textarea id="material-descricao" rows="2" maxlength="1000" placeholder="Estado, origem, observações..."></textarea>
                 </div>
                 <div class="grid-2">
                     <div class="input-group">
                         <label>Quantidade (kg)</label>
-                        <input type="number" id="material-peso" required>
+                        <input type="number" id="material-peso" step="0.01" min="0.01" required>
                     </div>
                     <div class="input-group">
                         <label>Lance Mínimo (R$)</label>
-                        <input type="number" id="material-lance" required>
+                        <input type="number" id="material-lance" step="0.01" min="0.01" required>
                     </div>
+                </div>
+                <div class="input-group">
+                    <label>Encerramento do leilão</label>
+                    <input type="datetime-local" id="material-prazo" required>
+                </div>
+                <div class="input-group">
+                    <label>Foto (opcional)</label>
+                    <input type="file" id="material-foto" accept="image/*">
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-cancel" onclick="fecharModal('modal-anuncio')">Cancelar</button>
@@ -182,13 +217,43 @@
             <h2>Dar Lance no Leilão</h2>
             <p id="lance-material-nome" style="margin-bottom: 15px; font-weight: bold; color: #0d5c43;"></p>
             <form id="form-lance">
+                <input type="hidden" id="lance-id">
                 <div class="input-group">
                     <label>Seu Lance (R$)</label>
-                    <input type="number" id="lance-valor" required placeholder="Deve superar o último lance">
+                    <input type="number" id="lance-valor" step="0.01" min="0.01" required placeholder="Deve superar o último lance">
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-cancel" onclick="fecharModal('modal-lance')">Cancelar</button>
                     <button type="submit" class="btn-primary">Enviar Lance</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-cadastro">
+        <div class="modal-content">
+            <h2>Criar conta</h2>
+            <form id="form-cadastro">
+                <div class="input-group">
+                    <label>Tipo de conta</label>
+                    <select id="cad-perfil">
+                        <option value="vendedor">Pessoa (quero vender materiais)</option>
+                        <option value="empresa">Empresa compradora</option>
+                    </select>
+                </div>
+                <div class="input-group"><label>Nome</label><input type="text" id="cad-nome" required maxlength="120"></div>
+                <div class="input-group"><label>E-mail</label><input type="email" id="cad-email" required></div>
+                <div class="grid-2">
+                    <div class="input-group"><label>Senha (mín. 6)</label><input type="password" id="cad-senha" minlength="6" required></div>
+                    <div class="input-group"><label>Telefone</label><input type="text" id="cad-telefone" maxlength="20"></div>
+                </div>
+                <div id="cad-campos-empresa" style="display:none;">
+                    <div class="input-group"><label>Razão social</label><input type="text" id="cad-razao" maxlength="150"></div>
+                    <div class="input-group"><label>CNPJ</label><input type="text" id="cad-cnpj" maxlength="18" placeholder="00.000.000/0000-00"></div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="fecharModal('modal-cadastro')">Cancelar</button>
+                    <button type="submit" class="btn-primary">Cadastrar</button>
                 </div>
             </form>
         </div>
