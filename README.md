@@ -193,20 +193,3 @@ Projeto desenvolvido com Scrum e Kanban, em 4 sprints de 1 semana.
 | Scrum Master | Welder |
 | Desenvolvedor | Vitor Hugo |
 
-Fluxo de branches:
-
-- `main`: código estável, atualizado somente por pull request
-- `develop`: integração da sprint atual
-- `feature/<nome>`: uma branch por funcionalidade
-
-## Documentação
-
-Os documentos do projeto ficam na pasta `docs/`:
-
-- Documento de requisitos
-- Diagrama de casos de uso, de atividades e de classes
-- Representação da arquitetura de software
-
-## Licença
-
-Projeto acadêmico. Defina aqui a licença, se houver.
