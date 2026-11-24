@@ -16,6 +16,11 @@ class Lance extends Model
         return ['valor' => 'float'];
     }
 
+    public function anuncio(): BelongsTo
+    {
+        return $this->belongsTo(Anuncio::class);
+    }
+
     public function empresa(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
